@@ -9,11 +9,11 @@ using System.Collections.Generic;
 using System.Collections;
 using PressureLib;
 
-class Point
+class PressurePoint
 {
 	public Vector2 sp;
 	public Vector3 p;
-	public Point next;
+	public PressurePoint next;
 }
 
 public class drawApp : MonoBehaviour
@@ -33,7 +33,7 @@ public class drawApp : MonoBehaviour
 	private Material wiresMat;
 	private Vector3 ppoint;
 	private float lineSize = 1.0f;
-	private Point firstpoint;
+	private PressurePoint firstpoint;
 
 	void Start ()
 	{			
@@ -78,7 +78,7 @@ public class drawApp : MonoBehaviour
 				Vector3 newpoint = GetWorldPoint ();
 			
 				if (firstpoint == null) {
-					firstpoint = new Point ();
+					firstpoint = new PressurePoint ();
 					firstpoint.p = transform.InverseTransformPoint (newpoint);
 					firstpoint.sp = Input.mousePosition;
 				}
@@ -87,9 +87,9 @@ public class drawApp : MonoBehaviour
 					Vector3 ls = transform.TransformPoint (ppoint);
 					AddSegment (meshPen, pointsToQuad (ls, newpoint, lineSize), false);
 				
-					Point points = firstpoint;
+					PressurePoint points = firstpoint;
 										
-					Point np = new Point ();
+					PressurePoint np = new PressurePoint ();
 					np.p = transform.InverseTransformPoint (newpoint);
 					np.sp = Input.mousePosition;
 					points.next = np;
