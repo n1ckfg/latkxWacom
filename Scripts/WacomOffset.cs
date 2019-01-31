@@ -6,14 +6,16 @@ using PressureLib;
 public class WacomOffset : MonoBehaviour
 {
 
-    public SteamVR_NewController ctl;
+    public SteamVR_NewController mainCtl;
+    public SteamVR_NewController altCtl;
     public Vector2 wacomCursor = Vector2.zero;
     public bool isActive = false;
     public float triggerDistance = 0.0001f;
     public float timeout = 2f;
 
     private Vector3 origPos;
-    private Vector2 lastCursor;
+    private Quaternion origRot;
+    private Vector2 lastCursor = Vector2.zero;
     private float sensitivityX = 2f;
     private float sensitivityY = 2f;
 
@@ -28,31 +30,38 @@ public class WacomOffset : MonoBehaviour
 
     private void Start() {
         origPos = transform.localPosition;
+        origRot = transform.localRotation;
+        StartCoroutine(startTimeout());
     }
 
     private void Update() {
         wacomCursor = new Vector2((PressureManager.cursorPosition.x / Screen.width) - 0.5f, (PressureManager.cursorPosition.y / Screen.height) - 0.5f);
 
-        if (Vector2.Distance(wacomCursor, lastCursor) >= triggerDistance) {
-            isActive = true;
-            transform.localPosition = new Vector3(wacomCursor.x, transform.localPosition.y, wacomCursor.y);
-        } else {
-            StartCoroutine(startTimeout());
-        }
+        if (Time.realtimeSinceStartup > timeout) {
+            if (!isActive && Vector2.Distance(wacomCursor, lastCursor) >= triggerDistance) {
+                isActive = true;
+                transform.parent = altCtl.transform;
+                transform.localPosition = origPos;
+                transform.localRotation = origRot;
+            }
 
-        if (isActive) {
-            ctl.triggerPressed = Input.GetMouseButton(0);
-        } else {
-            transform.localPosition = origPos;
+            if (isActive) {
+                transform.localPosition = new Vector3(wacomCursor.x, transform.localPosition.y, wacomCursor.y);
+                mainCtl.triggerPressed = Input.GetMouseButton(0);
+            } else {
+                transform.parent = mainCtl.transform;
+                transform.localPosition = origPos;
+                transform.localRotation = origRot;
+            }
         }
 
         lastCursor = new Vector2(wacomCursor.x, wacomCursor.y);
     }
 
     private IEnumerator startTimeout() {
-        yield return new WaitForSeconds(timeout);
-        if (Vector2.Distance(wacomCursor, lastCursor) < triggerDistance) {
-            isActive = false;
+        while (true) {
+            yield return new WaitForSeconds(timeout);
+            isActive = Vector2.Distance(wacomCursor, lastCursor) >= triggerDistance;
         }
     }
 
