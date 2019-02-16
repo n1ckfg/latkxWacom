@@ -35,7 +35,7 @@ public class WacomOffset : MonoBehaviour
     }
 
     private void Update() {
-        wacomCursor = new Vector2((PressureManager.cursorPosition.x / Screen.width) - 0.5f, (PressureManager.cursorPosition.y / Screen.height) - 0.5f);
+        wacomCursor = new Vector2(PressureManager.cursorPosition.x / Screen.width, (PressureManager.cursorPosition.y / Screen.height) - 0.5f);
 
         if (Time.realtimeSinceStartup > timeout) {
             if (!isActive && Vector2.Distance(wacomCursor, lastCursor) >= triggerDistance) {
@@ -66,3 +66,4 @@ public class WacomOffset : MonoBehaviour
     }
 
 }
+ 
