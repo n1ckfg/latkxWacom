@@ -78,6 +78,7 @@ public class WacomOffset : MonoBehaviour
     }
 
     void wacomModeStart() {
+        latk.useCollisions = false;
         timeoutCounter = 0f;
         isActive = true;
         wacomGrid.enabled = true;
