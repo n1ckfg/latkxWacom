@@ -7,13 +7,20 @@ public class WacomOffset : MonoBehaviour
 {
 
     public LightningArtist latk;
-    public SteamVR_NewController mainCtl;
-    public SteamVR_NewController altCtl;
+    public Transform mainCtl;
+    public Transform altCtl;
     public Renderer wacomGrid;
     public Vector2 wacomCursor = Vector2.zero;
     public bool isActive = false;
     public float triggerDistance = 0.001f;
     public float timeout = 10f;
+
+    [HideInInspector] public bool triggerDown = false;
+    [HideInInspector] public bool triggerPressed = false;
+    [HideInInspector] public bool triggerUp = false;
+    [HideInInspector] public bool menuDown = false;
+    [HideInInspector] public bool menuPressed = false;
+    [HideInInspector] public bool menuUp = false;
 
     private Vector3 origPos;
     private Quaternion origRot;
@@ -53,16 +60,6 @@ public class WacomOffset : MonoBehaviour
         wacomCursorUpdate();
 
         if (Input.GetMouseButton(0)) timeoutCounter = 0;
-
-        /*
-        if (Input.GetMouseButtonDown(1)) {
-            if (!isActive) {
-                wacomModeStart();
-            } else {
-                wacomModeEnd();
-            }
-        }
-        */
 
         if (lastCursorDist >= triggerDistance) {
             timeoutCounter = 0f;
@@ -108,15 +105,13 @@ public class WacomOffset : MonoBehaviour
     void wacomModeUpdate() {
         transform.localPosition = new Vector3(wacomCursor.x, transform.localPosition.y, wacomCursor.y);
 
-        mainCtl.triggerDown = Input.GetMouseButtonDown(0);
-        mainCtl.triggerPressed = Input.GetMouseButton(0);
-        mainCtl.triggerUp = Input.GetMouseButtonUp(0);
+        triggerDown = Input.GetMouseButtonDown(0);
+        triggerPressed = Input.GetMouseButton(0);
+        triggerUp = Input.GetMouseButtonUp(0);
 
-        mainCtl.menuDown = Input.GetMouseButtonDown(1);
-        mainCtl.menuPressed = Input.GetMouseButton(1);
-        mainCtl.menuUp = Input.GetMouseButtonUp(1);
-
-        //Debug.Log(wacomCursor.x + " " + wacomCursor.y + " " + mainCtl.triggerPressed);
+        menuDown = Input.GetMouseButtonDown(1);
+        menuPressed = Input.GetMouseButton(1);
+        menuUp = Input.GetMouseButtonUp(1);
     }
 
     private IEnumerator startTimeout() {
